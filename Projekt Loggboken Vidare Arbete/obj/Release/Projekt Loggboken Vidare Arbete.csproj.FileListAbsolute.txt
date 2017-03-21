@@ -1,0 +1,5 @@
+C:\Users\Shun\documents\visual studio 2015\Projects\Projekt Loggboken Vidare Arbete\Projekt Loggboken Vidare Arbete\bin\Release\Projekt Loggboken Vidare Arbete.exe.config
+C:\Users\Shun\documents\visual studio 2015\Projects\Projekt Loggboken Vidare Arbete\Projekt Loggboken Vidare Arbete\bin\Release\Projekt Loggboken Vidare Arbete.exe
+C:\Users\Shun\documents\visual studio 2015\Projects\Projekt Loggboken Vidare Arbete\Projekt Loggboken Vidare Arbete\bin\Release\Projekt Loggboken Vidare Arbete.pdb
+C:\Users\Shun\documents\visual studio 2015\Projects\Projekt Loggboken Vidare Arbete\Projekt Loggboken Vidare Arbete\obj\Release\Projekt Loggboken Vidare Arbete.exe
+C:\Users\Shun\documents\visual studio 2015\Projects\Projekt Loggboken Vidare Arbete\Projekt Loggboken Vidare Arbete\obj\Release\Projekt Loggboken Vidare Arbete.pdb

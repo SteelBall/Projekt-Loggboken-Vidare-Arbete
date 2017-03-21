@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Projekt_Loggboken_Vidare_Arbete
 {
-    public class LogEntryClass
+    public class LogEntry //Klass med allt ett logginlägg ska innehålla
     {
         private long logNumber;
         private DateTime datum;
         private string rubrik;
         private string loggText;
 
-        public LogEntryClass (long logNumber, DateTime datum, string rubrik, string loggText)
+        //Konstruktor för logginlägget. Vi kommer att skicka in logginformation i det här formatet
+        public LogEntry (long logNumber, DateTime datum, string rubrik, string loggText) 
         {
             this.logNumber = logNumber;
             this.datum = datum;
@@ -21,26 +23,54 @@ namespace Projekt_Loggboken_Vidare_Arbete
             this.loggText = loggText;
         }
 
+        //Engenskaper som är kopplade till logNumber, datum, rubrik och loggtext.
+        //Ändrar värdet för våra objekt
         public long LogNumber
         {
-            get { return logNumber; }
-            set { logNumber = value; }
+            get
+            {
+                return logNumber;
+            }
+            set
+            {
+                logNumber = value;
+            }
         }
 
         public DateTime Datum
         {
-            get { return datum; }
-            set { datum = value; }
+            get
+            {
+                return datum;
+            }
+            set
+            {
+                datum = value;
+            }
         }
+
         public string Rubrik
         {
-            get { return rubrik; }
-            set { rubrik = value; }
+            get
+            {
+                return rubrik;
+            }
+            set
+            {
+                rubrik = value;
+            }
         }
+
         public string LoggText
         {
-            get { return loggText; }
-            set { loggText = value; }
+            get
+            {
+                return loggText;
+            }
+            set
+            {
+                loggText = value;
+            }
         }
     }
 
@@ -61,15 +91,11 @@ namespace Projekt_Loggboken_Vidare_Arbete
 
         static void Main(string[] args)
         {
-            List<LogEntryClass> loggBoken = new List<LogEntryClass>();
-
-            //Skapar en lista med vektorer som ska hålla i våra logginlägg:
-            List<string[]> loggBok = new List<string[]> { };
-            string[] logg = new string[2]; //Platshållare med 2 index för rubrik och text som vi sedan ska lägga till i loggBoken
+            List<LogEntry> loggBoken = new List<LogEntry>();
 
             string rubrik; //Platshållare för rubrik
             string loggText; //Platshållare för loggtexten
-
+            
             //Programmets on/off-switch:
             bool isRunning = true;
 
@@ -78,208 +104,210 @@ namespace Projekt_Loggboken_Vidare_Arbete
             {
                 huvudMeny(); //Anropar metoden huvudMeny och skriver ut menyn
 
-                string menyValString = Console.ReadLine();//Användaren skriver in sitt menyval
-                int menyVal; //Vi skapar int som vi ska konvertera menyvalet till
+                string menyVal = Console.ReadLine();//Användaren skriver in sitt menyval
 
-                //OM menyValString kan konverteras till int(menyVal) OCH menyVal = 1-5, gå vidare. Annars felmeddelande.
-                if (int.TryParse(menyValString, out menyVal) && menyVal > 0 && menyVal < 6)
+                Console.Clear();
+
+                switch (menyVal) //Huvudmeny
                 {
-                    //Konverterar menyvalet till ett heltal som sedan kan användas i switchen nedanför:
-                    menyVal = Convert.ToInt32(menyValString);
-                    Console.Clear();
 
-                    switch (menyVal)
-                    {
-                        //Skriv en ny logg
-                        case 1:
-                            Console.WriteLine("\n\t[Skriv en ny logg!]");
+                    //Skriv en ny logg
+                    case "1":
+                        Console.WriteLine("\n\t[Skriv en ny logg!]");
 
-                            Console.WriteLine("\n\tSkriv en rubrik för din logg:\n\t");
+                        Console.WriteLine("\n\tSkriv en rubrik för din logg:\n\t");
+                        rubrik = Console.ReadLine().ToUpper();
 
-                            rubrik = Console.ReadLine();
+                        if (rubrik == "") //Autorubrik för tomma strängar
+                        {
+                            rubrik = "INGEN RUBRIK";
+                        }
 
-                            if (rubrik == "") //Autorubrik för tomma strängar
-                            {
-                                rubrik = "INGEN RUBRIK";
-                            }
+                        Console.WriteLine("\n\tSkriv in din logg:\n\t");
+                        loggText = Console.ReadLine();
 
-                            logg[0] = rubrik.ToUpper(); //Lägger till rubriken i första indexet på logg
+                        if (loggText == "") //Autotext för tomma strängar
+                        {
+                            loggText = "Det finns ingenting i den här loggen";
+                        }
 
-                            Console.WriteLine("\n\tSkriv in din logg:\n\t");
+                        //Lägger till det vi har skrivit som en ny LogEntry i listan loggBoken
+                        loggBoken.Add(new LogEntry((loggBoken.LongCount() + 1), DateTime.Now, rubrik, loggText));
 
-                            loggText = Console.ReadLine();
+                        Console.ReadKey();
+                        break;
 
-                            if (loggText == "") //Autotext för tomma strängar
-                            {
-                                loggText = "Det finns ingenting i den här loggen";
-                            }
+                    //Visa alla loggar
+                    case "2":
+                        Console.WriteLine("\n\t[Visa alla loggar!]");
 
-                            logg[1] = loggText; //Lägger till loggtexten i andra indexet på logg
+                        if (loggBoken.LongCount() == 0) //Om loggBok är tom
+                        {
+                            Console.WriteLine("\n\tDet finns inga registrerade loggar...");
+                        }
+                        else if (loggBoken.LongCount() == 1) //Grammatikändring om det bara finns en logg
+                        {
+                            Console.WriteLine("\n\tDet finns " + loggBoken.LongCount() + " registrerad logg:\n");
+                        }
+                        else //Skriver ut antalet loggar
+                        {
+                            Console.WriteLine("\n\tDet finns " + loggBoken.LongCount() + " registrerade loggar:\n");
+                        }
 
-                            loggBok.Add(logg.ToArray()); //Kopierar logg till loggBok
+                        foreach (var logEntry in loggBoken) //Skriver eu varje logEntry i loggBoken med formatet nedan:
+                        {
+                            Console.WriteLine("\n\tNr. {0}\n\tDatum: {1}\n\tRubrik: {2}\n\t{3}", Convert.ToString(logEntry.LogNumber), logEntry.Datum, logEntry.Rubrik, logEntry.LoggText);
+                        }
 
-                            //=============================================================
+                        Console.ReadKey();
+                        break;
 
-                            loggBoken.Add(new LogEntryClass((loggBoken.LongCount() + 1), DateTime.Now, rubrik, loggText));
+                    //Sök efter en logg
+                    case "3":
+                        Console.WriteLine("\n\t[Sök efter en logg!]");
 
+                        bool searchHit = false; //Meddelar om sökningen lyckades
+                        string rubrikSearch; //Användarens sökord
+                        string loggSearch; //Användarens sökord
+                        long loggNrSearch; //Användarens sökord
 
-                            //=============================================================
-                            Console.ReadKey();
-                            break;
+                        Console.WriteLine("\n\t[1]Sök loggnummer");
+                        Console.WriteLine("\t[2]Sök efter rubrik");
+                        Console.WriteLine("\t[3]Sök efter loggtext");
+                        Console.WriteLine("\n\t[4]Tillbaka till huvudmeny");
 
-                        //Visa alla loggar
-                        case 2:
-                            Console.WriteLine("\n\t[Visa alla loggar!]");
+                        menyVal = Console.ReadLine();
 
-                            if (loggBoken.LongCount() == 0) //Om loggBok är tom
-                            {
-                                Console.WriteLine("\n\tDet finns inga registrerade loggar...");
-                            }
-                            else if (loggBok.LongCount() == 1) //Grammatikändring om det bara finns en logg
-                            {
-                                Console.WriteLine("\n\tDet finns " + loggBoken.LongCount() + " registrerad logg:\n");
-                            }
-                            else
-                            {
-                                Console.WriteLine("\n\tDet finns " + loggBoken.LongCount() + " registrerade loggar:\n"); //Skriver ut antalet loggar
-                            }
-                            //=============================================================
-                            foreach (var logEntry in loggBoken)
-                            {
-                                Console.WriteLine("\n\tNr. {0}\n\tDatum: {1}\n\tRubrik: {2}\n\t{3}", Convert.ToString(logEntry.LogNumber), logEntry.Datum, logEntry.Rubrik, logEntry.LoggText);
-                            }
-                            //=============================================================
-                            Console.ReadKey();
-                            break;
+                        switch (menyVal) //Sökmeny
+                        {
+                            case "1": //Sök efter loggnummer
+                                Console.WriteLine("\n\t[Sök efter loggnummer!]");
 
-                        //Sök efter en logg
-                        case 3:
-                            Console.WriteLine("\n\t[Sök efter en logg!]");
+                                Console.WriteLine("\n\tSkriv in loggnummret du letar efter:");
 
-                            bool searchHit = false; //Meddelar om sökningen lyckades
-                            string rubrikSearch; //Användarens sökord
-                            string loggSearch; //Användarens sökord
+                                loggNrSearch = Convert.ToInt32(Console.ReadLine()); //Konverterar användarens sökord till int så att det kan matchas till loggnummer
 
-                            Console.WriteLine("\n\t[1]Sök efter rubrik");
-                            Console.WriteLine("\t[2]Sök efter loggtext");
-                            Console.WriteLine("\n\t[3]Tillbaka till huvudmeny");
+                                Console.WriteLine("\n\tSökresultat:\n");
 
-                            menyValString = Console.ReadLine();
-
-                            switch (menyValString)
-                            {
-                                //Sök efter rubrik
-                                case "1":
-                                    Console.WriteLine("\n\t[Sök efter rubrik!]");
-
-                                    Console.WriteLine("\n\tSkriv in rubriken du letar efter:");
-
-                                    rubrikSearch = Console.ReadLine();
-                                    rubrikSearch = rubrikSearch.ToUpper(); //Konverterar användarens sökord till versaler så att det kan matchas till rubrik
-
-
-                                    Console.WriteLine("\n\tSökresultat:\n");
-
-                                    foreach (string[] element in loggBok) //För varje element i loggBok
+                                for (int i = 0; i < loggBoken.LongCount(); i++) //Går igenom varje element i loggBoken
+                                {
+                                    if (loggBoken[i].LogNumber == loggNrSearch) //Om en logEntry i loggboken har samma LogNumber som det man söker efter:
                                     {
-                                        if (element[0].Contains(rubrikSearch)) //Om första index i elementet innehåller sökordet
-                                        {
-                                            searchHit = true; //Sökning lyckades
-                                            Console.WriteLine("\tRukrik: " + element[0] + "\n\tLogg: " + element[1] + "\n"); //Skriver ut resultat
-                                        }
+                                        searchHit = true; //Sökning lyckades
+                                        Console.WriteLine("\n\tNr. {0}\n\tDatum: {1}\n\tRubrik: {2}\n\t{3}", Convert.ToString(loggBoken[i].LogNumber), loggBoken[i].Datum, loggBoken[i].Rubrik, loggBoken[i].LoggText); //Skriver ut resultat
                                     }
+                                }
 
-                                    if (searchHit == false) //Om sökning misslyckas
+                                if (searchHit == false) //Om sökning misslyckas
+                                {
+                                    Console.WriteLine("\tLoggnummer " + loggNrSearch + " hittades inte...");
+                                }
+
+                                Console.ReadKey();
+                                break;
+
+                            //Sök efter rubrik
+                            case "2":
+                                Console.WriteLine("\n\t[Sök efter rubrik!]");
+
+                                Console.WriteLine("\n\tSkriv in rubriken du letar efter:");
+
+                                rubrikSearch = Console.ReadLine().ToUpper(); //Konverterar användarens sökord till versaler så att det kan matchas till rubrik
+
+                                Console.WriteLine("\n\tSökresultat:\n");
+
+                                for (int i = 0; i < loggBoken.Count; i++) //Går igenom loggBoken
+                                {
+                                    if (loggBoken[i].Rubrik.Contains(rubrikSearch)) //Om en rubrik i loggboken innehåller sökningen
                                     {
-                                        Console.WriteLine("\tDet finns inga loggar med den rubriken...");
+                                        searchHit = true; //Sökning lyckades
+                                        Console.WriteLine("\n\tNr. {0}\n\tDatum: {1}\n\tRubrik: {2}\n\t{3}", Convert.ToString(loggBoken[i].LogNumber), loggBoken[i].Datum, loggBoken[i].Rubrik, loggBoken[i].LoggText); //Skriver ut resultat
                                     }
+                                }
 
-                                    Console.ReadKey();
-                                    break;
+                                if (searchHit == false) //Om sökning misslyckas
+                                {
+                                    Console.WriteLine("\tDet finns inga loggar med den rubriken...");
+                                }
 
-                                //Sök efter loggtext
-                                case "2":
-                                    Console.WriteLine("\n\t[Sök efter loggtext!]");
-                                    Console.WriteLine("\n\tSkriv in texten som loggen innehåller:");
+                                Console.ReadKey();
+                                break;
 
-                                    loggSearch = Console.ReadLine(); //Sökord
+                            //Sök efter loggtext
+                            case "3":
+                                Console.WriteLine("\n\t[Sök efter loggtext!]");
+                                Console.WriteLine("\n\tSkriv in texten som loggen innehåller:");
 
-                                    Console.WriteLine("\n\tSökresultat:\n");
+                                loggSearch = Console.ReadLine(); //Sökord
 
-                                    foreach (string[] element in loggBok) //För varje element i loggBok
+                                Console.WriteLine("\n\tSökresultat:\n");
+
+                                for (int i = 0; i < loggBoken.Count; i++) //Går igenom loggboken
+                                {
+                                    if (loggBoken[i].LoggText.Contains(loggSearch)) //Om en loggtext i loggboken innehåller loggSearch
                                     {
-                                        if (element[1].Contains(loggSearch)) //Om andra index i elementet innehåller sökordet
-                                        {
-                                            searchHit = true; //Sökning lyckades
-                                            Console.WriteLine("\tRukrik: " + element[0] + "\n\tLogg: " + element[1] + "\n"); //Skriver ut resultat
-                                        }
+                                        searchHit = true; //Sökning lyckades
+                                        Console.WriteLine("\n\tNr. {0}\n\tDatum: {1}\n\tRubrik: {2}\n\t{3}", Convert.ToString(loggBoken[i].LogNumber), loggBoken[i].Datum, loggBoken[i].Rubrik, loggBoken[i].LoggText); //Skriver ut resultat
                                     }
+                                }
 
-                                    if (searchHit == false) //Om sökning misslyckas
-                                    {
-                                        Console.WriteLine("\tDet finns inga loggar med det innehållet...");
-                                    }
+                                if (searchHit == false) //Om sökning misslyckas
+                                {
+                                    Console.WriteLine("\tDet finns inga loggar med det innehållet...");
+                                }
 
-                                    Console.ReadKey();
-                                    //En nackdel med denna sökning är att den är case-sensitive. Eftersom rubriken är i versaler
-                                    //är det inget problem men med loggtexten måste man vara väldigt specifik. Skulle kunna lösa det med några
-                                    //extra rader kod men jag sparar det till uppgiften för högre betyg om jag har tid.
-                                    break;
+                                Console.ReadKey();
+                                //En nackdel med denna sökning är att den är case-sensitive. Eftersom rubriken är i versaler
+                                //är det inget problem men med loggtexten måste man vara noga med stora och små bokstäver.
+                                break;
 
-                                case "3": //Gör ingenting så att användaren går tillbaka till menyn direkt
-                                    break;
-                                default:
-                                    Console.WriteLine("\n\tFelaktig inmatning!");
-                                    Console.ReadKey();
-                                    break;
-                            }
+                            case "4": //Gör ingenting så att användaren går tillbaka till menyn direkt
+                                break;
+                            default:
+                                Console.WriteLine("\n\tFelaktig inmatning!");
+                                Console.ReadKey();
+                                break;
+                        }
 
-                            break;
+                        break;
 
-                        //Radera alla loggar
-                        case 4:
-                            Console.WriteLine("\n\t[Radera alla loggar!]");
+                    //Radera alla loggar
+                    case "4":
+                        Console.WriteLine("\n\t[Radera alla loggar!]");
 
-                            Console.WriteLine("\n\tÄr du säker på att du vill radera alla loggar? [j]a / [n]ej");
+                        Console.WriteLine("\n\tÄr du säker på att du vill radera alla loggar? [j]a / [n]ej");
 
-                            menyValString = Console.ReadLine();
-                            menyValString = menyValString.ToUpper(); //Så att det passar vårat case
+                        menyVal = Console.ReadLine().ToUpper();
 
-                            switch (menyValString)
-                            {
-                                case "J":
-                                case "JA":
-                                    loggBok.Clear(); //Rensar allt i loggBok
+                        switch (menyVal)
+                        {
+                            case "J":
+                            case "JA":
+                                loggBoken.Clear(); //Rensar allt i loggBok
 
-                                    Console.WriteLine("\n\tAlla loggar har blivit raderade! Tryck på valfri tangent för att gå tillbaka till menyn...");
-                                    break;
+                                Console.WriteLine("\n\tAlla loggar har blivit raderade! Tryck på valfri tangent för att gå tillbaka till menyn...");
+                                break;
 
-                                default:
-                                    Console.WriteLine("\n\tRadering avbruten. Tryck på valfri tangent för att gå tillbaka till menyn...");
-                                    break;
-                            }
+                            default:
+                                Console.WriteLine("\n\tRadering avbruten. Tryck på valfri tangent för att gå tillbaka till menyn...");
+                                break;
+                        }
 
-                            Console.ReadKey();
-                            break;
+                        Console.ReadKey();
+                        break;
 
-                        //Avsluta
-                        case 5:
-                            isRunning = false;
-                            break;
+                    //Avsluta
+                    case "5":
+                        isRunning = false;
+                        break;
 
-                        //Felmeddelande om man skriver in något annat än 1-5
-                        default:
-                            Console.WriteLine("\n\tFelaktig inmatning!");
-                            Console.ReadKey();
-                            break;
-                    }
+                    //Felmeddelande om man skriver in något annat än 1-5
+                    default:
+                        Console.WriteLine("\n\tFelaktig inmatning!");
+                        Console.ReadKey();
+                        break;
                 }
-                //Vid felaktig inmatning:
-                else
-                {
-                    Console.WriteLine("\n\tFelaktig inmatning!");
-                    Console.ReadKey();
-                }
+
                 Console.Clear();
             }
         }
